@@ -1,0 +1,121 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://beam_shoot/beam_bullet.gd" type="Script" id=1]
+[ext_resource path="res://beam_shoot/laser.png" type="Texture" id=2]
+[ext_resource path="res://beam_shoot/5dced3fc175023274d8734681c6be31b.png" type="Texture" id=3]
+
+[sub_resource type="ShaderMaterial" id=1]
+
+render_priority = 0
+_sections_unfolded = [ "shader_param" ]
+
+[sub_resource type="RectangleShape2D" id=2]
+
+custom_solver_bias = 0.0
+extents = Vector2( 1850, 20 )
+
+[sub_resource type="Shader" id=3]
+
+code = "shader_type canvas_item;
+
+void fragment () {
+	vec2 position = UV;
+	float pi = 3.14;
+	float distance_to_center = distance(position,vec2(0.5,0.5));
+	//float rotation_index = distance_to_center*6.0*pi*(sin(TIME/20.0));
+	float rotation_index = 0.3*sin(TIME*sin(TIME));
+	
+	// move to (0.5,0.5)
+	position = UV - vec2(0.5,0.5);
+
+	// rotation transform
+	mat2 rot_transform = mat2(vec2(cos(rotation_index),-sin(rotation_index)), 
+							  vec2(sin(rotation_index), cos(rotation_index)));
+							
+	mat2 scale_transform = mat2(vec2(1.0/(1.0 + 0.3*sin(TIME)), 0.0), 
+							    vec2(0.0 , 1.0/(1.0 + 0.3*sin(TIME))));
+								
+	position = rot_transform*scale_transform*position;
+	
+	// move back
+	position = position + vec2(0.5,0.5);
+	
+	COLOR = texture(TEXTURE,position);
+}"
+
+[sub_resource type="ShaderMaterial" id=4]
+
+render_priority = 0
+shader = SubResource( 3 )
+
+[node name="beam_bullet" type="Node2D"]
+
+script = ExtResource( 1 )
+_sections_unfolded = [ "Animation", "Material", "Offset", "Pause", "Region", "Transform", "Visibility", "Z Index" ]
+
+[node name="main" type="Area2D" parent="." index="0"]
+
+scale = Vector2( 1e-05, 1 )
+input_pickable = true
+gravity_vec = Vector2( 0, 1 )
+gravity = 98.0
+linear_damp = 0.1
+angular_damp = 1.0
+audio_bus_override = false
+audio_bus_name = "Master"
+_sections_unfolded = [ "Collision", "Transform" ]
+
+[node name="beam" type="Sprite" parent="main" index="0"]
+
+material = SubResource( 1 )
+texture = ExtResource( 2 )
+centered = false
+offset = Vector2( 0, -350 )
+_sections_unfolded = [ "Material", "Offset", "Transform" ]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="main" index="1"]
+
+position = Vector2( 1853, 0 )
+shape = SubResource( 2 )
+_sections_unfolded = [ "Transform", "Visibility", "Z Index" ]
+
+[node name="start_beam" type="Sprite" parent="." index="1"]
+
+material = SubResource( 4 )
+scale = Vector2( 0.6, 0.6 )
+texture = ExtResource( 3 )
+_sections_unfolded = [ "Material", "Transform" ]
+
+[node name="Light2D" type="Light2D" parent="start_beam" index="0"]
+
+position = Vector2( 0, -12.5 )
+enabled = true
+editor_only = false
+texture = ExtResource( 3 )
+offset = Vector2( 0, 0 )
+texture_scale = 1.0
+color = Color( 0.222137, 0.980469, 0.25176, 0.872941 )
+energy = 1.0
+mode = 0
+range_height = 0.0
+range_z_min = -1024
+range_z_max = 1024
+range_layer_min = 0
+range_layer_max = 0
+range_item_cull_mask = 1
+shadow_enabled = false
+shadow_color = Color( 0, 0, 0, 0 )
+shadow_buffer_size = 2048
+shadow_gradient_length = 0.0
+shadow_filter = 0
+shadow_filter_smooth = 0.0
+shadow_item_cull_mask = 1
+_sections_unfolded = [ "Material", "Transform" ]
+
+[connection signal="area_entered" from="main" to="." method="_on_main_area_entered"]
+
+[connection signal="body_entered" from="main" to="." method="_on_main_body_entered"]
+
+[connection signal="body_exited" from="main" to="." method="_on_main_body_exited"]
+
+

@@ -1,0 +1,81 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://beam_shoot/5dced3fc175023274d8734681c6be31b.png" type="Texture" id=1]
+[ext_resource path="res://beam_shoot/end_beam.gd" type="Script" id=2]
+[ext_resource path="res://beam_shoot/light.png" type="Texture" id=3]
+
+[sub_resource type="Shader" id=1]
+
+code = "shader_type canvas_item;
+
+void fragment () {
+	vec2 position = UV;
+	float pi = 3.14;
+	float distance_to_center = distance(position,vec2(0.5,0.5));
+	//float rotation_index = distance_to_center*6.0*pi*(sin(TIME/20.0));
+	float rotation_index = 0.3*sin(TIME*sin(TIME));
+	
+	// move to (0.5,0.5)
+	position = UV - vec2(0.5,0.5);
+
+	// rotation transform
+	mat2 rot_transform = mat2(vec2(cos(rotation_index),-sin(rotation_index)), 
+							  vec2(sin(rotation_index), cos(rotation_index)));
+							
+	mat2 scale_transform = mat2(vec2(1.0 + 0.3*sin(TIME), 0.0), 
+							    vec2(0.0 , 1.0 + 0.2*sin(TIME)));
+								
+	position = rot_transform*scale_transform*position;
+	
+	// move back
+	position = position + vec2(0.5,0.5);
+	
+	COLOR = texture(TEXTURE,position);
+}"
+
+[sub_resource type="ShaderMaterial" id=2]
+
+render_priority = 0
+shader = SubResource( 1 )
+
+[node name="end_beam" type="Sprite"]
+
+material = SubResource( 2 )
+texture = ExtResource( 1 )
+script = ExtResource( 2 )
+_sections_unfolded = [ "Material", "Transform", "Visibility" ]
+
+[node name="Timer" type="Timer" parent="." index="0"]
+
+process_mode = 1
+wait_time = 0.1
+one_shot = true
+autostart = true
+
+[node name="Light2D" type="Light2D" parent="." index="1"]
+
+enabled = true
+editor_only = false
+texture = ExtResource( 3 )
+offset = Vector2( 0, 0 )
+texture_scale = 1.0
+color = Color( 0.156527, 0.804688, 0.0220032, 0.66851 )
+energy = 1.0
+mode = 0
+range_height = 0.0
+range_z_min = -1024
+range_z_max = 1024
+range_layer_min = 0
+range_layer_max = 0
+range_item_cull_mask = 1
+shadow_enabled = false
+shadow_color = Color( 0, 0, 0, 0 )
+shadow_buffer_size = 2048
+shadow_gradient_length = 0.0
+shadow_filter = 0
+shadow_filter_smooth = 0.0
+shadow_item_cull_mask = 1
+
+[connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
+
+

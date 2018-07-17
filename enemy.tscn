@@ -1,0 +1,25 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://enemy.gd" type="Script" id=1]
+[ext_resource path="res://g4471.png" type="Texture" id=2]
+
+[node name="KinematicBody2D" type="KinematicBody2D" index="0"]
+
+input_pickable = false
+collision_layer = 1
+collision_mask = 1
+collision/safe_margin = 0.08
+script = ExtResource( 1 )
+
+[node name="Sprite" type="Sprite" parent="." index="0"]
+
+rotation = 1.5708
+texture = ExtResource( 2 )
+_sections_unfolded = [ "Transform" ]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="." index="1"]
+
+build_mode = 0
+polygon = PoolVector2Array( 31.8891, 159.05, 12.8439, 209.383, -33.4089, 206.663, -57.8956, 199.861, -52.4541, 126.401, -83.7427, 86.9498, -95.9861, 16.2104, -164.005, -38.2046, -162.644, -103.503, -100.067, -114.386, -86.4634, -81.7365, -55.1749, -111.665, 31.8891, -141.593, 118.953, -103.503, 140.719, -68.1328, 161.125, -102.142, 212.819, -89.8988, 220.981, -47.7272, 193.774, 9.40851, 158.404, 28.4538, 144.8, 78.7876, 121.674, 115.518, 124.395, 157.689, 129.836, 172.653, 129.836, 193.059, 82.223, 194.419, 63.1777, 194.419, 65.8984, 159.05 )
+
+
